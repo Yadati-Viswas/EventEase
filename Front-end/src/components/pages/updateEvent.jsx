@@ -2,14 +2,13 @@ import React from "react";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { updateEventApi,allEventsApi } from "../api/eventApi";
 
 export default function UpdateEvent() {
     const location = useLocation();
     const eventData = location.state?.event || {};
-    console.log("Event Data:", eventData);
     const [event, setEvent] = useState("");
     const [place, setPlace] = useState("");
     const [date, setDate] = useState("");
@@ -41,22 +40,9 @@ export default function UpdateEvent() {
       formData.append("endTime", endTime);
       formData.append("description", description);
       formData.append("image", image);
-      const response = await axios(`http://localhost:3000/events/updateEvent/${eventData._id}`, {
-        method: "POST",
-        data: formData,
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      });
+      const response = await updateEventApi(formData, eventData._id);
       if (response.status === 200) {
-        const allEventResponse = await axios("http://localhost:3000/events/all", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        });
+        const allEventResponse = await allEventsApi();
         const allEvents = allEventResponse.data.data;
         navigate("/events/allEvents", { state: { allEvents } });
       } else {

@@ -2,8 +2,8 @@ import React from "react";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { allEventsApi, addEventApi } from "../api/eventApi";
 
 export default function NewEvent() {
     const [event, setEvent] = useState("");
@@ -24,22 +24,9 @@ export default function NewEvent() {
       formData.append("endTime", endTime);
       formData.append("description", description);
       formData.append("image", image);
-      const response = await axios("http://localhost:3000/events/newEvent", {
-        method: "POST",
-        data: formData,
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-    });
+      const response = await addEventApi(formData);
       if (response.status === 200) {
-        const allEventResponse = await axios("http://localhost:3000/events/all", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        });
+        const allEventResponse = await allEventsApi();
         const allEvents = allEventResponse.data.data;
         allEvents.forEach((event) => {
           console.log(event);

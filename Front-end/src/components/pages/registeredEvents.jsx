@@ -1,15 +1,13 @@
 import Footer from "../Footer";
 import Navbar from "../Navbar";
 import { useEffect,useState } from "react";
-import axios from "axios";
+import { getRegisteredEventsApi } from "../api/eventApi";
 
 export default function RegisteredEvents() {
     const [registeredEvents, setRegisteredEvents] = useState([]);
     useEffect(() => {
         const getRegisteredEvents = async () => {
-            const response = await axios.get("http://localhost:3000/events/registered-events", {
-              withCredentials: true,
-            });
+            const response = await getRegisteredEventsApi();
             console.log("Registered Events Response:", response.data.data);
             if (response.status === 200 || response.status === 304) {
               setRegisteredEvents(response.data.data);

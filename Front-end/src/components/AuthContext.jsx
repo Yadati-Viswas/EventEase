@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { checkSessionApi } from './api/eventApi'; // Adjust the import path as necessary
 
 const AuthContext = createContext();
 
@@ -16,9 +16,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkSession = async () => {
       try{
-        const response = await axios.get('http://localhost:3000/users/check-session', {
-          withCredentials: true,
-        });
+        const response = await checkSessionApi();
         if (response.status === 200 || response.status === 304) {
           setIsAuthenticated(true);
           setUser(response.data.data);

@@ -6,15 +6,14 @@ import { Link } from 'react-router-dom';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { myEventsApi,logoutApi } from './api/eventApi.js';
 
 function Navbar() {
   const { isAuthenticated, user } = useAuth();
   const { logout } = useAuthNavigate();
   const navigate = useNavigate();
   const getMyEvents = async () => {
-    const response = await axios.get('http://localhost:3000/users/myEvents', {
-      withCredentials: true,
-    });
+    const response = await myEventsApi();
     if (response.status === 200) {
       navigate('/users/myEvents', { state: { myEvents: response.data.data } });
     } else {
@@ -22,9 +21,7 @@ function Navbar() {
     }
   };
   const Logout = async () => {
-    const response = await axios.get('http://localhost:3000/users/logout', {
-      withCredentials: true,
-    });
+    const response = await logoutApi();
     if (response.status === 200) {
       alert('User logged out');
       navigate('/');

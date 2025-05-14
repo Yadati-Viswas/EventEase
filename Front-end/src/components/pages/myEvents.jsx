@@ -3,7 +3,7 @@ import Footer from '../Footer';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { deleteEventApi } from '../api/eventApi';
 
 export default function MyEvents(){
     const location = useLocation();
@@ -17,15 +17,7 @@ export default function MyEvents(){
     const DeleteEvent = async (event, e) => {
         e.preventDefault();
         const eventId = event._id;
-        const response = await axios({
-            method: "POST",
-            url: `http://localhost:3000/events/delete/${eventId}`,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            withCredentials: true,
-            timeout: 5000,
-        });
+        const response = await deleteEventApi(eventId);
         if (response.status === 200) {
             alert("Deleted successfully!");
             Navigate("/");

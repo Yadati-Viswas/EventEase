@@ -2,20 +2,14 @@ import atlanticCity  from "../assets/atlantic-city.jpg";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { allEventsApi } from "./api/eventApi"; 
 
 export default function Body() {
     const { isAuthenticated } = useAuth();
     const Navigate = useNavigate();
     const checkLogin = async () => {
       if (isAuthenticated) {
-        const allEventResponse = await axios("http://localhost:3000/events/all", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        });
+        const allEventResponse = await allEventsApi();
         const allEvents = allEventResponse.data.data;
         console.log(allEvents);
         Navigate("/events/allEvents", { state: { allEvents } });

@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
+import { getRegisteredEventsApi, registerEventApi } from "../api/eventApi";
 
 export default function AllEvents() {
   const location = useLocation();
@@ -10,9 +11,7 @@ export default function AllEvents() {
   const { allEvents } = location.state || {};
   useEffect(() => {
     const getRegisteredEvents = async () => {
-      const response = await axios.get("http://localhost:3000/events/registered-events", {
-        withCredentials: true,
-      });
+      const response = await getRegisteredEventsApi();
       console.log("Registered Events Response:", response.data.data);
       if (response.status === 200 || response.status === 304) {
         setRegisteredEvents(response.data.data.map(event => event._id));
@@ -26,16 +25,7 @@ export default function AllEvents() {
     e.preventDefault();
     const eventId = event._id;
     console.log("Event ID:",eventId);
-    const response = await axios({
-      method: "POST",
-      url: `http://localhost:3000/events/register/${eventId}`,
-      data: event,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      withCredentials: true,
-      timeout: 5000,
-    });
+    const response = await registerEventApi(event, eventId);
     if (response.status === 200) {
       alert("Registered successfully!");
       setRegisteredEvents((prev) => [...prev, eventId]);

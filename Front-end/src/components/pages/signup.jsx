@@ -4,6 +4,7 @@ import Navbar from '../Navbar';
 import Footer from '../Footer';
 import { useAuth } from '../AuthContext';
 import axios from 'axios';
+import { signupApi } from '../api/eventApi';
 
 function SignUp() {
     const [firstName, setFirstName] = useState('');
@@ -16,15 +17,7 @@ function SignUp() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const userData = {firstName, lastName, email, password, confirmPassword};
-        const response = await axios('http://localhost:3000/users/signup', {
-            method: 'POST',
-            data: userData,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            withCredentials: true,
-            timeout: 5000,
-          });
+        const response = await signupApi(userData);
           if (response.status === 200) {
             navigate('/users/login');
           }

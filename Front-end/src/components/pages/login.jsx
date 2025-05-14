@@ -4,7 +4,7 @@ import {useAuth} from '../AuthContext';
 import Navbar from '../Navbar';
 import Footer from '../Footer';
 import {Link} from 'react-router-dom';
-import axios from 'axios';
+import {loginApi} from '../api/eventApi';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -15,16 +15,7 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const userData = {email, password};
-        const response = await axios({
-          method: 'POST',
-          url: 'http://localhost:3000/users/login',
-          data: userData,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          withCredentials: true,
-          timeout: 5000,
-        });
+        const response = await loginApi(userData);
         if (response.status === 200) {
           login(response.data.data);
           navigate('/');
