@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const eventController = require('../modules/eventModules/eventController');
+const eventController = require('../modules/eventController');
 const { fileUpload } = require('../middleware/fileUpload');
 
 router.post('/newEvent',fileUpload, eventController.createEvent);

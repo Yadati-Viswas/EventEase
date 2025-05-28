@@ -1,6 +1,7 @@
-const User = require('../../models/user');
-const Event = require('../../models/event');
-const {findeventImages} = require('../eventModules/eventController');
+const {OAuth2Client} = require('google-auth-library');
+const User = require('../models/user');
+const Event = require('../models/event');
+const {findeventImages} = require('./eventController');
 
 exports.signup  = (req, res) => {
     let user = new User(req.body);
@@ -121,6 +122,55 @@ exports.logout = (req, res) => {
     res.status(200).json({
       status: 'success',
       message: 'Logout successful',
+    });
+  });
+}
+
+exports.googleLogin = (req, res) => {
+  const token = req.body.token;
+  const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  client.verifyIdToken({idToken: token, audience: process.env.GOOGLE_CLIENT_ID}).then((ticket) => {
+    const payload = ticket.getPayload();
+    const email = payload.email;
+    User.findOne({email: email}).then((user) => {
+      if (!user) {
+        user = new User({
+          email: email,
+          firstName: payload.given_name,
+          lastName: payload.family_name,
+          password: 'google',
+        });
+        user.save().then(() => {
+          req.session.userId = user._id;
+          res.status(200).json({
+            status: 'success',
+            message: 'Google login successful',
+            data: user,
+          });
+        }).catch(err => {
+          res.status(400).json({
+            status: 'fail',
+            message: err.message,
+          });
+        });
+      } else {
+        req.session.userId = user._id;
+        res.status(200).json({
+          status: 'success',
+          message: 'Google login successful',
+          data: user,
+        });
+      }
+    }).catch(err => {
+      res.status(400).json({
+        status: 'fail',
+        message: err.message,
+      });
+    });
+  }).catch(err => {
+    res.status(400).json({
+      status: 'fail',
+      message: err.message,
     });
   });
 }

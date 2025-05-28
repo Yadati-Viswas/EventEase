@@ -4,7 +4,8 @@ import {useAuth} from '../AuthContext';
 import Navbar from '../Navbar';
 import Footer from '../Footer';
 import {Link} from 'react-router-dom';
-import {loginApi} from '../api/eventApi';
+import {loginApi, postGoogleApi} from '../api/eventApi';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -23,6 +24,21 @@ function Login() {
           alert(response.message);
         }
     };
+    const handleGoogleSuccess = async (credentialResponse) => {
+      const response = await postGoogleApi(credentialResponse.credential);
+      if (response.status === 200) {
+        login(response.data.data);
+        navigate('/');
+      } else {
+        alert(response.message);
+      }
+    //alert('Google login successful! Token: ' + credentialResponse.credential);
+  };
+
+  // Google login error handler
+  const handleGoogleError = () => {
+    alert('Google login failed');
+  };
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -46,6 +62,11 @@ function Login() {
             </div>
             <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 cursor-pointer"> Login </button>
           </form>
+          <div className="mt-4 mb-4 flex flex-col bg-gray-900 gap-2">
+            <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+              <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} width="100%"/>
+            </GoogleOAuthProvider>
+          </div>
         </div>
       </div>
       <Footer />

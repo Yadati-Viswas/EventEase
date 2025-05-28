@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const Event = require('../../models/event');
+const Event = require('../models/event');
 
 exports.createEvent = (req, res) => {
     let newEvent = new Event(req.body);

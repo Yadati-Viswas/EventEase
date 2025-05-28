@@ -1,6 +1,5 @@
 import Navbar from '../Navbar';
 import Footer from '../Footer';
-import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { deleteEventApi } from '../api/eventApi';

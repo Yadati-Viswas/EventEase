@@ -2,6 +2,8 @@ import axios from 'axios';
 
 const baseURL = 'http://localhost:3000';
 
+const dockerURL = 'http://backend-service:3000';
+
 async function callAPI(method, endpoint, data = null, isAuthRequired = false, extraHeaders = {}) {
   
   const url = `${baseURL}${endpoint}`;
@@ -61,5 +63,18 @@ async function updateEventApi(formData, eventId) {
   return callAPI('POST', `/events/updateEvent/${eventId}`, formData, true, { 'Content-Type': 'multipart/form-data' });
 }
 
+async function postGoogleApi(token) {
+  return callAPI('POST', '/users/google-login', { token });
+}
+
+async function sendOtpApi(email) {
+  return callAPI('POST', '/send-otp', { email });
+}
+
+async function verifyOtpApi(email, otp) {
+  return callAPI('POST', '/verify-otp', { email, otp });
+}
+
 export { checkSessionApi, allEventsApi, myEventsApi, logoutApi, getRegisteredEventsApi, 
-  registerEventApi, loginApi, signupApi, deleteEventApi, addEventApi, updateEventApi };
+  registerEventApi, loginApi, signupApi, deleteEventApi, addEventApi, updateEventApi, 
+  postGoogleApi, sendOtpApi, verifyOtpApi };
