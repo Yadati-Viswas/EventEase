@@ -17,6 +17,15 @@ const url = process.env.MONGO_URL;
 const sessionSecret = process.env.SESSION_SECRET;
 app.set('set engine', 'ejs');
 
+app.use(cors({
+    origin: ['http://localhost:5173', 'https://event-ease-frontend-v1.vercel.app'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+app.options('*', cors());
+
 mongoose.connect(url, {
 }).then(() => {
     app.listen(port, () => {
@@ -31,11 +40,6 @@ app.use(express.static('public'));
 app.use(express.json({limit: '100mb'}));
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
-app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-}));
 
 app.use(session({
     secret: sessionSecret,
@@ -75,6 +79,3 @@ app.use((err, req, res, next)=>{
     res.status(err.status);
     res.render('error', {error: err});
 });
-
-
-
