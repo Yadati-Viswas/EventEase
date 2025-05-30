@@ -4,11 +4,15 @@ const baseURL = 'http://localhost:3000';
 
 const dockerURL = 'http://backend-service:3000';
 
+const deploymentURL = 'https://eventease-lmt5.onrender.com';
+
 async function callAPI(method, endpoint, data = null, isAuthRequired = false, extraHeaders = {}) {
   
-  const url = `${baseURL}${endpoint}`;
+  const url = `${deploymentURL}${endpoint}`;
   const defaultHeaders = { 'Content-Type': 'application/json', };
-  const headers = { ...defaultHeaders, ...extraHeaders };
+  const token = localStorage.getItem('token');
+  const authHeaders = isAuthRequired && token ? { Authorization: `Bearer ${token}` } : {};
+  const headers = { ...defaultHeaders, ...extraHeaders, ...authHeaders };
   const config = { method, url, headers,  ...(data && { data: data }),  withCredentials: true,};
   try {
     const response = await axios(config);
@@ -75,6 +79,10 @@ async function verifyOtpApi(email, otp) {
   return callAPI('POST', '/verify-otp', { email, otp });
 }
 
+async function resetPasswordApi(email, newPassword) {
+  return callAPI('POST', '/users/reset-password', { email, newPassword });
+}
+
 export { checkSessionApi, allEventsApi, myEventsApi, logoutApi, getRegisteredEventsApi, 
   registerEventApi, loginApi, signupApi, deleteEventApi, addEventApi, updateEventApi, 
-  postGoogleApi, sendOtpApi, verifyOtpApi };
+  postGoogleApi, sendOtpApi, verifyOtpApi, resetPasswordApi };

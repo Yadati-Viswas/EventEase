@@ -1,5 +1,5 @@
-const mongose = require('mongoose');
-const Schema = mongose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
 
 const userSchema = new Schema({
@@ -20,4 +20,4 @@ userSchema.pre('save', function(next){
 
 userSchema.methods.comparePassword = function(loginpassword) { return bcrypt.compare(loginpassword, this.password); };
 
-module.exports = mongose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);

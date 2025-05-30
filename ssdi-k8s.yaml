@@ -64,21 +64,21 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ssdi_project-backend:latest
+          image: ssdi_backend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
           env:
             - name: MONGO_URL
               valueFrom:
-              secretKeyRef:
-                name: backend-secrets
-                key: MONGO_URL
+                secretKeyRef:
+                  name: backend-secrets
+                  key: MONGO_URL
             - name: SESSION_SECRET
               valueFrom:
-              secretKeyRef:
-                name: backend-secrets
-                key: SESSION_SECRET
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SESSION_SECRET
             - name: PORT
               value: "3000"
             - name: HOST
@@ -111,7 +111,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ssdi_project-frontend:latest
+          image: ssdi_frontend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80

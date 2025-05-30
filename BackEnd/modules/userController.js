@@ -1,4 +1,5 @@
 const {OAuth2Client} = require('google-auth-library');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const Event = require('../models/event');
 const {findeventImages} = require('./eventController');
@@ -49,12 +50,13 @@ exports.login = (req, res) => {
             message: 'Invalid password',
           });
         }
-        req.session.userId = user._id;
-        console.log(req.session.userId);
+        console.log(user._id);
+        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRY});
         res.status(200).json({
           status: 'success',
           message: 'Login successful',
           data: user,
+          token: token,
         });
       });
     }).catch (error => {
@@ -65,24 +67,9 @@ exports.login = (req, res) => {
   });
 }
 
-exports.checkSession = async(req, res) => {
-  if(req.session.userId) {
-    const user = await User.findById(req.session.userId).select('email firstName lastName').lean();
-    console.log(user);
-    return res.status(200).json({
-      status: 'success',
-      message: 'Session is active',
-      data: user,
-    });
-  }
-  res.status(401).json({
-    status: 'fail',
-    message: 'Session is inactive',
-  });
-}
-
 exports.myEvents = (req, res) => {
-  const userId = req.session.userId;
+  const userId = req.user.userId;
+  console.log("User ID:", userId);
   if (!userId) {
     return res.status(401).json({
       status: 'fail',
@@ -112,17 +99,9 @@ exports.myEvents = (req, res) => {
 }
 
 exports.logout = (req, res) => {
-  req.session.destroy((err) => {
-    if(err) {
-      return res.status(500).json({
-        status: 'fail',
-        message: 'Logout failed',
-      });
-    }
-    res.status(200).json({
+  res.status(200).json({
       status: 'success',
       message: 'Logout successful',
-    });
   });
 }
 
@@ -141,7 +120,7 @@ exports.googleLogin = (req, res) => {
           password: 'google',
         });
         user.save().then(() => {
-          req.session.userId = user._id;
+          req.user.userId = user._id;
           res.status(200).json({
             status: 'success',
             message: 'Google login successful',
@@ -154,13 +133,42 @@ exports.googleLogin = (req, res) => {
           });
         });
       } else {
-        req.session.userId = user._id;
+        req.user.userId = user._id;
         res.status(200).json({
           status: 'success',
           message: 'Google login successful',
           data: user,
         });
       }
+    }).catch(err => {
+      res.status(400).json({
+        status: 'fail',
+        message: err.message,
+      });
+    });
+  }).catch(err => {
+    res.status(400).json({
+      status: 'fail',
+      message: err.message,
+    });
+  });
+}
+
+exports.resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+  User.findOne({ email: email }).then((user) => {
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'User not found',
+      });
+    }
+    user.password = newPassword;
+    user.save().then(() => {
+      res.status(200).json({
+        status: 'success',
+        message: 'Password reset successful',
+      });
     }).catch(err => {
       res.status(400).json({
         status: 'fail',

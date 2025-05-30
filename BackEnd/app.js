@@ -14,8 +14,16 @@ const app = express();
 const port = process.env.PORT;
 const host = process.env.HOST;
 const url = process.env.MONGO_URL;
-const sessionSecret = process.env.SESSION_SECRET;
-app.set('set engine', 'ejs');
+app.set('trust proxy', 1);
+
+app.use(cors({
+    origin: ['http://localhost:5173', 'https://event-ease-frontend-v1.vercel.app'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+app.options('*', cors());
 
 mongoose.connect(url, {
 }).then(() => {
@@ -31,32 +39,8 @@ app.use(express.static('public'));
 app.use(express.json({limit: '100mb'}));
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
-app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-}));
-
-app.use(session({
-    secret: sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {maxAge: 60*60*1000},
-    store: new MongoSession({mongoUrl: url})
-}));
-
-app.use(flash());
-
-app.use((req, res, next)=>{
-    res.locals.user = req.session.user || null;
-    console.log(req.session);
-    res.locals.successMessage = req.flash('success');
-    res.locals.errorMessage = req.flash('error'); 
-    next();
-});
 
 app.use(router);
-//app.use("/", (req, res) => { });
 
 app.use((req, res, next) => {
     let err = new Error('The server cannot locate ' + req.url);
@@ -75,6 +59,3 @@ app.use((err, req, res, next)=>{
     res.status(err.status);
     res.render('error', {error: err});
 });
-
-
-

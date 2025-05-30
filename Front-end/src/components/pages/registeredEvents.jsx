@@ -18,9 +18,9 @@ export default function RegisteredEvents() {
         getRegisteredEvents();
     }, []);
     return (
-        <div>
+        <div className="min-h-screen flex flex-col font-sans">
             <Navbar />
-            <div className="flex-grow flex items-center justify-center bg-[#dcdcdc] min-h-screen">
+            <div className="flex-grow flex items-center justify-center bg-[#dcdcdc]">
                 <div className='bg-white p-8 rounded shadow'>
                     <h2 className="text-2xl font-bold mb-6 text-black text-center">Registered Events</h2>
                     {registeredEvents.map((event) => (

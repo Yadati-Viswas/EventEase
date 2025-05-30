@@ -14,26 +14,18 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
   };
   useEffect(() => {
-    const checkSession = async () => {
-      try{
-        const response = await checkSessionApi();
-        if (response.status === 200 || response.status === 304) {
-          setIsAuthenticated(true);
-          setUser(response.data.data);
-        }
-        else {
-          console.log('Unexpected response status:', response.status);
-        }
-      }
-      catch (error) {
-        console.error('User is not logged in:', error.message);
-      }
-    };
-    checkSession();
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    if (token && userData) {
+      setIsAuthenticated(true);
+      setUser(JSON.parse(userData));
+    }
 }, []);
   const logout = (navigate) => {
     setIsAuthenticated(false);
     setUser(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     navigate('/');
   };
   return (

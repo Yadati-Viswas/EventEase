@@ -35,7 +35,7 @@ export default function AllEvents() {
   };
   console.log("Registered Events:", registeredEvents);
   return (
-    <div className="font-sans">
+    <div className="min-h-screen flex flex-col font-sans">
       <Navbar />
       <div className="flex-grow flex items-center justify-center bg-[#dcdcdc]">
         <div className='bg-white p-8 rounded shadow'>

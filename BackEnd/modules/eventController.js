@@ -5,7 +5,7 @@ const Event = require('../models/event');
 exports.createEvent = (req, res) => {
     let newEvent = new Event(req.body);
     newEvent.image = req.file.filename;
-    newEvent.hostName = req.session.userId;
+    newEvent.hostName = req.user.userId;
     newEvent.save().then(() => {
         res.status(200).json({
             status: 'success',
@@ -38,7 +38,8 @@ exports.getAllEvents = (req, res) => {
 
 exports.registerEvent = (req, res) => {
     const eventId = req.params.id;
-    const userId = req.session.userId;
+    const userId = req.user.userId;
+    console.log("User ID:", userId);
     Event.findById(eventId).then((event) => {
         if (!event) {
             return res.status(404).json({
@@ -97,7 +98,8 @@ exports.deleteEvent = (req, res) => {
 }
 
 exports.getRegisteredEvents = (req, res) => {
-    const userId = req.session.userId;
+    const userId = req.user.userId;
+    console.log("User ID:", userId);
     if (!userId) {
         return res.status(401).json({
             status: 'fail',
@@ -166,7 +168,7 @@ exports.updateEvent = (req, res) => {
 
 exports.findeventImages = function findeventImages(events){
     events.map((event) => {
-        const imagePath = path.join(__dirname, '../../public/images', event.image);
+        const imagePath = path.join(__dirname, '../public/images', event.image);
         let imageData = null;
         try {
             imageData = fs.readFileSync(imagePath, { encoding: 'base64' });
