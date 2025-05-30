@@ -4,9 +4,11 @@ const baseURL = 'http://localhost:3000';
 
 const dockerURL = 'http://backend-service:3000';
 
+const deploymentURL = 'https://event-ease-backend-v1.vercel.app';
+
 async function callAPI(method, endpoint, data = null, isAuthRequired = false, extraHeaders = {}) {
   
-  const url = `${baseURL}${endpoint}`;
+  const url = `${deploymentURL}${endpoint}`;
   const defaultHeaders = { 'Content-Type': 'application/json', };
   const headers = { ...defaultHeaders, ...extraHeaders };
   const config = { method, url, headers,  ...(data && { data: data }),  withCredentials: true,};
@@ -75,6 +77,10 @@ async function verifyOtpApi(email, otp) {
   return callAPI('POST', '/verify-otp', { email, otp });
 }
 
+async function resetPasswordApi(email, newPassword) {
+  return callAPI('POST', '/users/reset-password', { email, newPassword });
+}
+
 export { checkSessionApi, allEventsApi, myEventsApi, logoutApi, getRegisteredEventsApi, 
   registerEventApi, loginApi, signupApi, deleteEventApi, addEventApi, updateEventApi, 
-  postGoogleApi, sendOtpApi, verifyOtpApi };
+  postGoogleApi, sendOtpApi, verifyOtpApi, resetPasswordApi };

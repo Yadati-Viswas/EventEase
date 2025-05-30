@@ -174,3 +174,32 @@ exports.googleLogin = (req, res) => {
     });
   });
 }
+
+exports.resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+  User.findOne({ email: email }).then((user) => {
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'User not found',
+      });
+    }
+    user.password = newPassword;
+    user.save().then(() => {
+      res.status(200).json({
+        status: 'success',
+        message: 'Password reset successful',
+      });
+    }).catch(err => {
+      res.status(400).json({
+        status: 'fail',
+        message: err.message,
+      });
+    });
+  }).catch(err => {
+    res.status(400).json({
+      status: 'fail',
+      message: err.message,
+    });
+  });
+}
