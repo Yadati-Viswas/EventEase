@@ -23,12 +23,16 @@ async function callAPI(method, endpoint, data = null, isAuthRequired = false, ex
   }
 }
 
-async function checkSessionApi() {
-  return callAPI('GET', '/users/check-session', null, true);
+async function sendOtpApi(email) {
+  return callAPI('POST', '/send-otp', { email });
 }
 
-async function allEventsApi() {
-  return callAPI('GET', '/events/all', null, true);
+async function verifyOtpApi(email, otp) {
+  return callAPI('POST', '/verify-otp', { email, otp });
+}
+
+async function checkSessionApi() {
+  return callAPI('GET', '/users/check-session', null, true);
 }
 
 async function myEventsApi() {
@@ -39,6 +43,26 @@ async function logoutApi() {
   return callAPI('GET', '/users/logout', null, true);
 }
 
+async function loginApi(userData) {
+  return callAPI('POST', '/users/login', userData);
+}
+
+async function signupApi(userData) {
+  return callAPI('POST', '/users/signup', userData);
+}
+
+async function postGoogleApi(token) {
+  return callAPI('POST', '/users/google-login', { token });
+}
+
+async function resetPasswordApi(email, newPassword) {
+  return callAPI('POST', '/users/reset-password', { email, newPassword });
+}
+
+async function allEventsApi() {
+  return callAPI('GET', '/events/all', null, true);
+}
+
 async function getRegisteredEventsApi() {
   return callAPI('GET', '/events/registered-events', null, true);
 }
@@ -47,12 +71,8 @@ async function registerEventApi(event, eventId) {
   return callAPI('POST', `/events/register/${eventId}`, event, true);
 }
 
-async function loginApi(userData) {
-  return callAPI('POST', '/users/login', userData);
-}
-
-async function signupApi(userData) {
-  return callAPI('POST', '/users/signup', userData);
+async function UnregisterEventApi(eventId) {
+  return callAPI('POST', `/events/unregister/${eventId}`, null, true);
 }
 
 async function deleteEventApi(eventId) {
@@ -67,22 +87,6 @@ async function updateEventApi(formData, eventId) {
   return callAPI('POST', `/events/updateEvent/${eventId}`, formData, true, { 'Content-Type': 'multipart/form-data' });
 }
 
-async function postGoogleApi(token) {
-  return callAPI('POST', '/users/google-login', { token });
-}
-
-async function sendOtpApi(email) {
-  return callAPI('POST', '/send-otp', { email });
-}
-
-async function verifyOtpApi(email, otp) {
-  return callAPI('POST', '/verify-otp', { email, otp });
-}
-
-async function resetPasswordApi(email, newPassword) {
-  return callAPI('POST', '/users/reset-password', { email, newPassword });
-}
-
 export { checkSessionApi, allEventsApi, myEventsApi, logoutApi, getRegisteredEventsApi, 
-  registerEventApi, loginApi, signupApi, deleteEventApi, addEventApi, updateEventApi, 
-  postGoogleApi, sendOtpApi, verifyOtpApi, resetPasswordApi };
+  registerEventApi, UnregisterEventApi, loginApi, signupApi, deleteEventApi, addEventApi, 
+  updateEventApi, postGoogleApi, sendOtpApi, verifyOtpApi, resetPasswordApi };

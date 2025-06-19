@@ -75,6 +75,37 @@ exports.registerEvent = (req, res) => {
     });
 }
 
+exports.UnregisterEvent = (req, res) => {
+    const eventId = req.params.id;
+    const userId = req.user.userId;
+    Event.findById(eventId).then((event) => {
+        if(!event) {
+            res.status(404).json({
+                status: 'fail',
+                message: 'Event not found',
+            });
+        }
+        if (!event.registeredUsers.includes(userId)) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'User not registered for this event',
+            });
+        }
+        event.registeredUsers = event.registeredUsers.filter(id => id.toString() !== userId);
+        event.save().then(()=> {
+            res.status(200).json({
+                status: 'success',
+                message: 'User unregistered from the event successfully',
+            });
+        }).catch(err => {
+            res.status(400).json({
+                status: 'fail',
+                message: err.message,
+            });
+        });
+    });
+}
+
 exports.deleteEvent = (req, res) => {
     const eventId = req.params.id;
     Event.findByIdAndDelete(eventId).then((event) => {
