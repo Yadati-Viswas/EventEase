@@ -11,6 +11,7 @@ const eventSchema = new Schema({
     endTime: {type: String, required: [true, 'End Time is required']},
     image: {type: String, required: [true, 'Image is required']},
     registeredUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    rsvp: [{ type: Schema.Types.ObjectId, ref: 'Rsvp' }]
 }, {timestamps: true});
 
 module.exports = mongoose.model('Event', eventSchema);

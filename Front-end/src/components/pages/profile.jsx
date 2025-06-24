@@ -1,7 +1,7 @@
 import React, { use } from "react";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
-import {useAuth} from "../AuthContext";
+import {useAuth} from "../../contexts/AuthContext";
 
 export default function Profile() {
   const { user } = useAuth();

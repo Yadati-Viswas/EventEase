@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { checkSessionApi } from './api/eventApi'; // Adjust the import path as necessary
+import { checkSessionApi } from '../components/api/eventApi'; // Adjust the import path as necessary
 
 const AuthContext = createContext();
 
@@ -9,7 +9,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const login = (userData) => {
-    //console.log(userData);
     setIsAuthenticated(true);
     setUser(userData);
   };

@@ -1,47 +1,34 @@
-import React, { useEffect,useState } from "react";
-import { useLocation } from "react-router-dom";
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
-import { getRegisteredEventsApi, registerEventApi, UnregisterEventApi } from "../api/eventApi";
+import { Link } from "react-router-dom";
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import { getRegisteredEventsApi, registerEventApi, UnregisterEventApi, getRsvpCountApi } from "../api/eventApi";
+import { useAuth } from "../../contexts/AuthContext";
+import { useEvents } from "../../contexts/EventsContext";
+import { RegisterEvent, UnregisterEvent } from "../../utils/eventRegisterHandlers";
 
 export default function AllEvents() {
   const location = useLocation();
-  const [registeredEvents, setRegisteredEvents] = useState([]);
+  const navigate = useNavigate();
   const { allEvents } = location.state || {};
-  useEffect(() => {
-    const getRegisteredEvents = async () => {
-      const response = await getRegisteredEventsApi();
-      console.log("Registered Events Response:", response.data.data);
+  const {registeredEvents, setRegisteredEvents} = useEvents();
+  const { isAuthenticated } = useAuth();
+  const handleClick = async (event, e) => {
+    e.preventDefault();
+    try {
+      const response = await getRsvpCountApi(event._id);
       if (response.status === 200 || response.status === 304) {
-        setRegisteredEvents(response.data.data.map(event => event._id));
+        const rsvpCount = response.data.data.countRsvp;
+        navigate(`/events/ShowEventDetails`, { state: { event, rsvpCount } });
       } else {
-        alert(response.message);
+        alert("Failed to fetch RSVP count.");
       }
-  };
-    getRegisteredEvents();
-  }, []);
-  const RegisterEvent = async (event, e) => {
-    e.preventDefault();
-    const eventId = event._id;
-    console.log("Event ID:",eventId);
-    const response = await registerEventApi(event, eventId);
-    if (response.status === 200) {
-      alert("Registered successfully!");
-      setRegisteredEvents((prev) => [...prev, eventId]);
-    } else {
-      alert("Registration failed!");
-    }
-  };
-  const UnregisterEvent = async (event, e) => {
-    e.preventDefault();
-    const eventId = event._id;
-    console.log("Event ID:", eventId);
-    const response = await UnregisterEventApi(eventId);
-    if (response.status === 200) {
-      alert("Unregistered successfully!");
-      setRegisteredEvents((prev) => prev.filter((id) => id !== eventId));
-    } else {
-      alert("Unregistration failed!");
+    } catch (error) {
+      console.error("Error fetching RSVP count:", error);
+      alert("An error occurred while fetching RSVP count.");
     }
   };
   return (
@@ -52,34 +39,38 @@ export default function AllEvents() {
         <h1 className="text-2xl font-bold mb-6 text-black text-center">All Events</h1>
         {allEvents.map((event) => (
           <div key={event._id} className="bg-gray-100 p-4 mb-4 rounded shadow">
-            <h2 className="text-xl font-bold">{event.event} </h2>
+            <h2 className="text-xl font-bold mb-3 hover:underline cursor-pointer" onClick={(e)=>handleClick(event,e)}>
+              {event.event}
+            </h2>
             <div className="flex text-black">
               <div>
-                <img src={`data:image/jpeg;base64,${event.image}`} alt={event.event} className="w-48 h-48 mt-2 rounded" />
+                <img src={`data:image/jpeg;base64,${event.image}`} alt={event.event} className="w-16 h-16 mt-2 rounded" />
               </div>
               <div className="ml-4 mt-4">
-                {registeredEvents.includes(event._id) ? (
-                  <span className="text-green-500 mr-2">Registered ✔</span>
-                ) : null}
-                <p><strong>Place:</strong> {event.place}</p>
-                <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString("en-US", {
-                  year: "numeric", month: "long", day: "numeric", })}</p>
-                <p><strong>Start Time:</strong> {event.startTime}</p>
-                <p><strong>End Time:</strong> {event.endTime}</p>
-                <p><strong>Description:</strong> {event.description}</p>
+                <p><strong>Organizer:</strong> {event.organizer}</p>
+                <p><strong>No. Of Users Registered:</strong> {event.registeredUsers ? event.registeredUsers.length: 0}</p>
               </div>
-            </div>
-            <div className="mt-4 flex mb-4">
-              {registeredEvents.includes(event._id) ? (
-                <button onClick={(e) => UnregisterEvent(event, e)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
-                  Unregister
-                </button>
-              ) : (
-                <button onClick={(e) => RegisterEvent(event, e)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
+              <div className="flex items-center">
+                { isAuthenticated ? (
+              <div className="ml-4 flex mt-4">
+                {registeredEvents.includes(event._id) ? (
+                  <div>
+                    <span className="text-green-500 mr-2">Registered ✔</span>
+                    <button onClick={(e) => UnregisterEvent(event, setRegisteredEvents, UnregisterEventApi, isAuthenticated, e)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
+                      Unregister
+                    </button>
+                  </div>
+                ) : (
+                <button onClick={(e) => RegisterEvent(event, setRegisteredEvents, registerEventApi, isAuthenticated, e)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
                   Register Now
                 </button>
+                )}
+              </div>
+              ) : (
+                  <Button onClick={(e)=> alert("Please login to register for the Event!")} className="text-red-500 mr-2">Please login to register</Button>
               )}
-            </div>
+              </div>
+          </div>
           </div>
         ))}
       </div>
@@ -88,3 +79,5 @@ export default function AllEvents() {
     </div>
   );
 }
+
+

@@ -11,6 +11,7 @@ import MyEvents from './components/pages/myEvents';
 import UpdateEvent from './components/pages/updateEvent';
 import RegisteredEvents from './components/pages/registeredEvents';
 import PasswordReset from './components/pages/passwordReset';
+import ShowEventDetails from './components/pages/showEventDetails';
 import { BrowserRouter , Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
         <Route path="/events/newEvent" element={<NewEvent />} />
         <Route path="/events/allEvents" element={<AllEvents />} />
         <Route path="/events/UpdateEvent" element={<UpdateEvent/>}/>
+        <Route path="/events/showEventDetails" element={<ShowEventDetails/>}/>
         <Route path="/users/logout" element={<Login />} />
         <Route path="/users/password-reset" element={<PasswordReset />} />
       </Routes>

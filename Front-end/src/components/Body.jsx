@@ -1,22 +1,18 @@
 import atlanticCity  from "../assets/atlantic-city.jpg";
 import { Link } from "react-router-dom";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../contexts/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 import { allEventsApi } from "./api/eventApi"; 
 
 export default function Body() {
-    const { isAuthenticated } = useAuth();
-    const Navigate = useNavigate();
-    const checkLogin = async () => {
-      if (isAuthenticated) {
-        const allEventResponse = await allEventsApi();
-        const allEvents = allEventResponse.data.data;
-        console.log(allEvents);
-        Navigate("/events/allEvents", { state: { allEvents } });
-      } else {
-        alert("Please login to register for the event");
-      }
-    }
+  const Navigate = useNavigate(); 
+  const getAllEvents = async () => { 
+    const allEventResponse = await allEventsApi();
+    const allEvents = allEventResponse.data.data;
+    console.log("All Events:", allEvents);
+    console.log(allEvents);
+    Navigate("/events/allEvents", { state: { allEvents} });
+  };
     return (
       <main className="flex-grow flex-center pt-4 bg-[#dcdcdc] min-h-screen">
         <div className="container mx-auto p-4 bg-white rounded shadow-lg">
@@ -54,7 +50,7 @@ export default function Body() {
             </div>
           
           <div className="flex justify-center bg-gray-300 mt-6 hover:bg-gray-200 p-4 rounded shadow">
-            <button onClick={checkLogin} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
+            <button onClick={getAllEvents} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
               View All Events and Register
             </button>
           </div>
@@ -62,3 +58,5 @@ export default function Body() {
       </main>
     );
   }
+
+  

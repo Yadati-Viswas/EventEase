@@ -87,6 +87,15 @@ async function updateEventApi(formData, eventId) {
   return callAPI('POST', `/events/updateEvent/${eventId}`, formData, true, { 'Content-Type': 'multipart/form-data' });
 }
 
+async function sendRsvpApi(eventId, rsvpData) {
+  return callAPI('POST', `/events/rsvp/${eventId}`, rsvpData, true);
+}
+
+async function getRsvpCountApi(eventId) {
+  return callAPI('GET', `/events/getRsvp/${eventId}`, null, true);
+}
+
 export { checkSessionApi, allEventsApi, myEventsApi, logoutApi, getRegisteredEventsApi, 
   registerEventApi, UnregisterEventApi, loginApi, signupApi, deleteEventApi, addEventApi, 
-  updateEventApi, postGoogleApi, sendOtpApi, verifyOtpApi, resetPasswordApi };
+  updateEventApi, postGoogleApi, sendOtpApi, verifyOtpApi, resetPasswordApi, sendRsvpApi
+, getRsvpCountApi };

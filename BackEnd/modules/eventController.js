@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const Event = require('../models/event');
+const Rsvp = require('../models/rsvp');
+const User = require('../models/user');
 
 exports.createEvent = (req, res) => {
     let newEvent = new Event(req.body);
@@ -21,12 +23,25 @@ exports.createEvent = (req, res) => {
 }
 
 exports.getAllEvents = (req, res) => {
-    Event.find().then((events) => {
-        const eventswithImage = this.findeventImages(events);
+    Event.find().lean().then(async (events) => {
+        let userDetails = null;
+        if (events.length > 0) {
+            userDetails = await User.findById(events[0].hostName).lean();
+        }
+        const updatedEvents = await Promise.all(events.map(async (event) => {
+        const user = await User.findById(event.hostName).lean();
+        return {
+            ...event,
+            organizer: user ? user.firstName + " " + user.lastName : "Unknown Host"
+        };
+        }));
+        console.log("Updated Events:", updatedEvents);
+        const eventswithImage = exports.findeventImages(updatedEvents);
+        console.log(eventswithImage);
         res.status(200).json({
             status: 'success',
             message: 'Events retrieved successfully',
-            data: eventswithImage,
+            data: eventswithImage ,
         });
     }).catch(err => {
         res.status(400).json({
@@ -194,6 +209,54 @@ exports.updateEvent = (req, res) => {
             status: 'fail',
             message: err.message,
         });
+    });
+}
+
+exports.sendRsvp = (req, res) => {
+    const eventId = req.params.id;
+    const status = req.body.rsvp;
+    const userId = req.user.userId;
+
+    Rsvp.findOneAndUpdate({ event: eventId, user: userId }, { $set: { event: eventId, user: userId, status: status } },
+        { upsert: true, new: true }).then(rsvpDetails => {
+        //console.log(rsvpDetails);
+        Event.findByIdAndUpdate(eventId, { $addToSet: { rsvp: rsvpDetails._id } }).then(() => {
+        return res.status(200).json({
+            status: 'success',
+            message: 'RSVP Updated Successfully',
+            data: rsvpDetails,
+        });
+    }).catch(err => {
+        if( err.name === 'ValidationError') {
+            err.status = 400;
+        }
+        console.log(err.message); 
+        next(err); 
+    })
+    }).catch(err => {
+        if( err.name === 'ValidationError') {
+            err.status = 400;
+        }
+        console.log(err.message); 
+        next(err); 
+    });
+}
+
+exports.getRsvp = (req, res) => {
+    const eventId = req.params.id;
+    Rsvp.countDocuments({ event: eventId, status:"Yes" }).then(countRsvp => {
+        console.log("RSVP Count:", countRsvp);
+        res.status(200).json({
+            status: 'success',
+            message: 'RSVP count retrieved successfully',
+            data: { countRsvp },
+        });
+    }).catch(err => {
+        if( err.name === 'ValidationError') {
+            err.status = 400;
+        }
+        console.log(err.message); 
+        next(err); 
     });
 }
 

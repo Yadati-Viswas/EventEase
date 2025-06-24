@@ -1,12 +1,10 @@
-import React from 'react';
 import Logo from '../assets/Ems_logo.png';
-import { useAuth, useAuthNavigate } from './AuthContext.jsx';
+import { useAuth, useAuthNavigate } from '../contexts/AuthContext.jsx';
 import {UserIcon} from '@heroicons/react/20/solid';
 import { Link } from 'react-router-dom';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { myEventsApi,logoutApi } from './api/eventApi.js';
+import { myEventsApi,logoutApi, allEventsApi } from './api/eventApi.js';
 
 function Navbar() {
   const { isAuthenticated, user } = useAuth();
@@ -31,6 +29,11 @@ function Navbar() {
     }
     logout();
   };
+  const getAllEvents = async () => { 
+    const allEventResponse = await allEventsApi();
+    const allEvents = allEventResponse.data.data;
+    navigate("/events/allEvents", { state: { allEvents} });
+};
   return (
     <nav className="bg-gray-800 text-white p-8 flex justify-between items-center">
     <div className="text-lg font-bold"><Link to="/"><img src={Logo} alt="Event Management System" class="w-20 h-20"></img></Link></div>
@@ -49,6 +52,9 @@ function Navbar() {
               <button onClick={Logout} className="text-white hover:text-gray-300 cursor-pointer">Logout</button>
             </PopoverPanel>
           </Popover>
+          {location.pathname !== "/" && (
+            <button onClick={getAllEvents} className="hover:text-gray-300">All Events</button>
+          )}
           <Link to="/events/newEvent" className="hover:text-gray-300">New Event</Link>
         </div>
       ) : (
