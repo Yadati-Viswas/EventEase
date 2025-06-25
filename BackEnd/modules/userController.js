@@ -83,11 +83,14 @@ exports.myEvents = (req, res) => {
         message: 'User not found',
       });
     }
-    const eventsWithImages = findeventImages(events);
+    events.map(event => {
+      event.image = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${event.image}`;
+    });
+    console.log("Events:", events);
     res.status(200).json({
       status: 'success',
       message: 'Events retrieved successfully',
-      data: eventsWithImages,
+      data: events,
     });
   }).catch(err => {
     res.status(400).json({

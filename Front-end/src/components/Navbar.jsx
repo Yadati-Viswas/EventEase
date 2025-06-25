@@ -53,9 +53,9 @@ function Navbar() {
             </PopoverPanel>
           </Popover>
           {location.pathname !== "/" && (
-            <button onClick={getAllEvents} className="hover:text-gray-300">All Events</button>
+            <button onClick={getAllEvents} className="hover:text-gray-300 cursor-pointer">All Events</button>
           )}
-          <Link to="/events/newEvent" className="hover:text-gray-300">New Event</Link>
+          <Link to="/events/newEvent" className="hover:text-gray-300 cursor-pointer">New Event</Link>
         </div>
       ) : (
         <div className="space-x-4">

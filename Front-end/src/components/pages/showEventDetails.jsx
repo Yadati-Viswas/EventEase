@@ -50,7 +50,7 @@ export default function ShowEventDetails() {
               </Stack>): null }
             <div className="flex text-black">
               <div>
-                <img src={`data:image/jpeg;base64,${event.image}`} alt={event.event} className="w-48 h-48 mt-2 rounded" />
+                <img src={event.image} alt={event.event} className="w-48 h-48 mt-2 rounded" />
               </div>
               <div className="ml-4 mt-4">
                 <p><strong>Organizer:</strong> {event.organizer}</p>

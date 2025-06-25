@@ -6,7 +6,8 @@ const User = require('../models/user');
 
 exports.createEvent = (req, res) => {
     let newEvent = new Event(req.body);
-    newEvent.image = req.file.filename;
+    console.log("New File name:", req.file.filename," Original Name:", req.file.originalname);
+    newEvent.image = req.file.originalname;
     newEvent.hostName = req.user.userId;
     newEvent.save().then(() => {
         res.status(200).json({
@@ -35,13 +36,14 @@ exports.getAllEvents = (req, res) => {
             organizer: user ? user.firstName + " " + user.lastName : "Unknown Host"
         };
         }));
+        updatedEvents.forEach(event => {
+            event.image = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${event.image}`;
+        });
         console.log("Updated Events:", updatedEvents);
-        const eventswithImage = exports.findeventImages(updatedEvents);
-        console.log(eventswithImage);
         res.status(200).json({
             status: 'success',
             message: 'Events retrieved successfully',
-            data: eventswithImage ,
+            data: updatedEvents ,
         });
     }).catch(err => {
         res.status(400).json({
@@ -153,17 +155,19 @@ exports.getRegisteredEvents = (req, res) => {
         });
     }
     Event.find({registeredUsers: userId}).then((events) => {
-        const eventswithImage = this.findeventImages(events);
         if (events.length === 0) {
             return res.status(404).json({
                 status: 'fail',
                 message: 'No registered events found',
             });
         }
+        events.forEach(event => {
+            event.image = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${event.image}`;
+        });
         res.status(200).json({
             status: 'success',
             message: 'Registered events retrieved successfully',
-            data: eventswithImage,
+            data: events,
         });
     }).catch(err => {
         res.status(400).json({
@@ -183,7 +187,7 @@ exports.updateEvent = (req, res) => {
             });
         }
         if (req.file) {
-            event.image = req.file.filename;
+            event.image = req.file.originalname;
         }
         event.event = req.body.event || event.event;
         event.date = req.body.date || event.date;
@@ -191,7 +195,7 @@ exports.updateEvent = (req, res) => {
         event.description = req.body.description || event.description;
         event.startTime = req.body.startTime || event.startTime;
         event.endTime = req.body.endTime || event.endTime;
-        
+        console.log("Updated Event:", event);
         event.save().then(() => {
             res.status(200).json({
                 status: 'success',
@@ -258,19 +262,4 @@ exports.getRsvp = (req, res) => {
         console.log(err.message); 
         next(err); 
     });
-}
-
-exports.findeventImages = function findeventImages(events){
-    events.map((event) => {
-        const imagePath = path.join(__dirname, '../public/images', event.image);
-        let imageData = null;
-        try {
-            imageData = fs.readFileSync(imagePath, { encoding: 'base64' });
-        } catch (err) {
-            console.error(`Error reading image file for event ${event._id}:`, err.message);
-        }
-        event.image= imageData;
-        return event;
-    });
-    return events;
 }

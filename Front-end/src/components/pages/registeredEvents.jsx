@@ -28,7 +28,7 @@ export default function RegisteredEvents() {
                         <h2 className="text-xl font-bold">{event.event}</h2>
                         <div className="flex text-black">
                         <div>
-                            <img src={`data:image/jpeg;base64,${event.image}`} alt={event.event} className="w-48 h-48 mt-2 rounded" />
+                            <img src={event.image} alt={event.event} className="w-48 h-48 mt-2 rounded" />
                         </div>
                         <div className="ml-4 mt-4">
                             <p><strong>Place:</strong> {event.place}</p>
