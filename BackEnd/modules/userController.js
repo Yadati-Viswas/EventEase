@@ -2,7 +2,6 @@ const {OAuth2Client} = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const Event = require('../models/event');
-const {findeventImages} = require('./eventController');
 
 exports.signup  = (req, res) => {
     let user = new User(req.body);
@@ -51,7 +50,7 @@ exports.login = (req, res) => {
           });
         }
         console.log(user._id);
-        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRY});
+        const token = jwt.sign({userId: user._id, email: user.email}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRY});
         res.status(200).json({
           status: 'success',
           message: 'Login successful',

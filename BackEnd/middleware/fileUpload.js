@@ -1,7 +1,8 @@
 const path = require('path');
 const multer  = require('multer');
 const fs = require('fs');
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const event = require('../models/event');
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -56,4 +57,17 @@ exports.fileUpload = (req, res, next) => {
       next(err);
     });    
   });
+}
+
+exports.fileDelete = async (event)=> {
+  const deleteParams = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: event.image,
+  };
+  try {
+    await s3.send(new DeleteObjectCommand(deleteParams));
+    console.log(`File deleted successfully from S3: ${event.image}`);
+  } catch (err) {
+    console.error(`Error deleting file from S3: ${err}`);
+  }
 }
