@@ -5,12 +5,14 @@ const Rsvp = require('../models/rsvp');
 const User = require('../models/user');
 const mailSender = require('../utils/mailSender');
 const { fileDelete } = require('../middleware/fileUpload');
+const { DateTime } = require('luxon');
 
 exports.createEvent = (req, res) => {
     let newEvent = new Event(req.body);
     console.log("New File name:", req.file.filename," Original Name:", req.file.originalname);
     newEvent.image = req.file.originalname;
     newEvent.hostName = req.user.userId;
+    newEvent = convertDateTime(req.body.startDate, req.body.endDate, newEvent);
     newEvent.save().then(() => {
         sendEmailNotification(req.user.email, "Event Created Successfully", `Your event "${newEvent.event}" has been created successfully.`).then(() => {
             res.status(200).json({
@@ -46,6 +48,10 @@ exports.getAllEvents = (req, res) => {
         };
         }));
         updatedEvents.forEach(event => {
+            const start = new Date(event.startDate);
+            const end = new Date(event.endDate);
+            event.startDateFormatted = DateTime.fromJSDate(start).toFormat('MM-dd-yyyy hh:mm a');
+            event.endDateFormatted = DateTime.fromJSDate(end).toFormat('MM-dd-yyyy hh:mm a');
             event.image = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${event.image}`;
         });
         console.log("Updated Events:", updatedEvents);
@@ -197,7 +203,7 @@ exports.getRegisteredEvents = (req, res) => {
             message: 'User not logged in',
         });
     }
-    Event.find({registeredUsers: userId}).then((events) => {
+    Event.find({registeredUsers: userId}).lean().then((events) => {
         if (events.length === 0) {
             return res.status(404).json({
                 status: 'fail',
@@ -205,7 +211,12 @@ exports.getRegisteredEvents = (req, res) => {
             });
         }
         events.forEach(event => {
+            const start = new Date(event.startDate);
+            const end = new Date(event.endDate);
+            event.startDateFormatted = DateTime.fromJSDate(start).toFormat('MM-dd-yyyy hh:mm a');
+            event.endDateFormatted = DateTime.fromJSDate(end).toFormat('MM-dd-yyyy hh:mm a');
             event.image = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${event.image}`;
+            console.log("Event:", event);
         });
         res.status(200).json({
             status: 'success',
@@ -233,11 +244,9 @@ exports.updateEvent = (req, res) => {
             event.image = req.file.originalname;
         }
         event.event = req.body.event || event.event;
-        event.date = req.body.date || event.date;
         event.place = req.body.place || event.place;
         event.description = req.body.description || event.description;
-        event.startTime = req.body.startTime || event.startTime;
-        event.endTime = req.body.endTime || event.endTime;
+        event = convertDateTime(req.body.startDate || event.startDate, req.body.endDate || event.endDate, event);
         console.log("Updated Event:", event);
         event.save().then(() => {
             sendEmailNotification(req.user.email, "Event Updated Successfully", `Your event "${event.event}" has been updated successfully.`).then(() => {
@@ -352,3 +361,11 @@ async function sendEmailNotification(email, title, body) {
     throw error;
   }
 }
+
+const convertDateTime = (startDate, endDate, eventDetails) => {
+    let startDateISO = startDate.includes('Z') ? startDate : `${startDate}:00Z`;
+    let endDateISO = endDate.includes('Z') ? endDate : `${endDate}:00Z`;
+    eventDetails.startDate = DateTime.fromISO(startDateISO).toJSDate();
+    eventDetails.endDate = DateTime.fromISO(endDateISO).toJSDate();
+    return eventDetails;
+};

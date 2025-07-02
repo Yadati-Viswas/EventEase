@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const Event = require('../models/event');
+const User = require('../models/user');
 
 exports.verifyToken = (req, res, next) => {
   const authHeaders = req.headers.authorization;
@@ -17,3 +19,45 @@ exports.verifyToken = (req, res, next) => {
     next();
   });
 };
+
+exports.isGuest = (req, res, next) => {
+    if(!req.user) {
+        next();
+    }
+    else {
+        return res.status(403).json({
+            message: 'You are already logged in',
+        });
+    }
+};
+
+exports.isLoggedIn = (req, res, next) => {
+  console.log(req.user);
+    if(req.user && req.user.userId) {
+        next();
+    } else {
+        return res.status(403).json({
+            message: 'You need to login first',
+        });
+    }
+}
+
+exports.isAuthor = (req, res, next) => {
+    let id = req.params.id;
+    Event.findById(id).then(event=>{
+        if(event) {
+            if(event.hostName == req.user.userId) {
+                next();
+            } else {
+                return res.status(401).json({
+                    message: 'You are not the author of this story',
+                });
+            }
+        }
+        else {
+            return res.status(404).json({
+                message: 'Event not found',
+            });
+        }
+    }).catch(err=>next(err));
+}

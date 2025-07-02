@@ -18,10 +18,10 @@ export default function Profile() {
     );
   }
   return (
-    <div className="font-sans">
+    <div className="min-h-screen flex flex-col font-sans">
       <Navbar />
-      <div className="flex-grow flex items-center justify-center bg-[#dcdcdc] min-h-screen overflow-hidden">
-        <div className="w-full max-w-md bg-gray-100 p-8 rounded shadow">
+      <div className="flex-grow flex items-center justify-center bg-[#dcdcdc]">
+        <div className='bg-white p-8 rounded shadow'>
           <h2 className="text-2xl font-bold mb-6 text-black text-center">My Profile</h2>
           <p><strong>First Name: </strong> {user.firstName}</p>
           <p><strong>Last Name: </strong> {user.lastName}</p>

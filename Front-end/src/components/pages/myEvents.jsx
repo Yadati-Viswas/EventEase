@@ -39,10 +39,8 @@ export default function MyEvents(){
                         </div>
                         <div className="ml-4 mt-4">
                             <p><strong>Place:</strong> {event.place}</p>
-                            <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString("en-US", {
-                                year: "numeric", month: "long", day: "numeric", })}</p>
-                            <p><strong>Start Time:</strong> {event.startTime}</p>
-                            <p><strong>End Time:</strong> {event.endTime}</p>
+                            <p><strong>Start Date:</strong> {event.startDateFormatted}</p>
+                            <p><strong>End Date:</strong> {event.endDateFormatted}</p>
                             <p><strong>Description:</strong> {event.description}</p>
                         </div>
                         </div>

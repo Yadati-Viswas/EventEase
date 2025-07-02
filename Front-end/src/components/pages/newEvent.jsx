@@ -8,9 +8,8 @@ import { allEventsApi, addEventApi } from "../api/eventApi";
 export default function NewEvent() {
     const [event, setEvent] = useState("");
     const [place, setPlace] = useState("");
-    const [date, setDate] = useState("");
-    const [startTime, setstartTime] = useState("");
-    const [endTime, setendTime] = useState("");
+    const [startDate, setstartDate] = useState("");
+    const [endDate, setendDate] = useState("");
     const [description, setDescription] = useState("");
     const [image, setImage] = useState(null);
     const navigate = useNavigate();
@@ -19,9 +18,8 @@ export default function NewEvent() {
       const formData = new FormData();
       formData.append("event", event);
       formData.append("place", place);
-      formData.append("date", date);
-      formData.append("startTime", startTime);
-      formData.append("endTime", endTime);
+      formData.append("startDate", startDate);
+      formData.append("endDate", endDate);
       formData.append("description", description);
       formData.append("image", image);
       const response = await addEventApi(formData);
@@ -37,10 +35,10 @@ export default function NewEvent() {
       }
     }
   return (
-    <div className="font-sans">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="flex-grow flex items-center justify-center mb-10 overflow-scroll bg-[#dcdcdc]">
-        <div className="w-full max-w-md bg-gray-100 p-8 rounded shadow">
+        <div className="flex-grow flex items-center justify-center bg-[#dcdcdc]">
+          <div className='bg-white p-8 mb-4 mt-4 rounded shadow'>
           <h2 className="text-2xl font-bold mb-6 text-black text-center">Create a New Event</h2>
           <form encType="multipart/form-data" onSubmit={handleSubmit}>
             <div className="mb-4">
@@ -54,19 +52,14 @@ export default function NewEvent() {
               placeholder="Enter Place" value={place} onChange={(e)=>setPlace(e.target.value)} />
             </div>
             <div className="mb-4">
-              <label htmlFor="date" className="block text-black mb-2"> Date </label>
-              <input id="date" type="date" className="w-full p-2 border border-gray-300 rounded" required
-              placeholder="Enter Date" value={date} onChange={(e)=>setDate(e.target.value)} />
+              <label htmlFor="startDate" className="block text-black mb-2"> Event Start Date </label>
+              <input id="startDate" type="datetime-local" className="w-full p-2 border border-gray-300 rounded" required
+              placeholder="Enter Time" value={startDate} onChange={(e)=>setstartDate(e.target.value)} />
             </div>
             <div className="mb-4">
-              <label htmlFor="time" className="block text-black mb-2"> Event Start Time </label>
-              <input id="time" type="time" className="w-full p-2 border border-gray-300 rounded" required
-              placeholder="Enter Time" value={startTime} onChange={(e)=>setstartTime(e.target.value)} />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="endTime" className="block text-black mb-2"> Event End Time </label>
-              <input id="endTime" type="time" className="w-full p-2 border border-gray-300 rounded" required
-              placeholder="Enter Time" value={endTime} onChange={(e)=>setendTime(e.target.value)} />
+              <label htmlFor="endDate" className="block text-black mb-2"> Event End Date </label>
+              <input id="endDate" type="datetime-local" className="w-full p-2 border border-gray-300 rounded" required
+              placeholder="Enter Time" value={endDate} onChange={(e)=>setendDate(e.target.value)} />
             </div>
             <div className="mb-4">
               <label htmlFor="description" className="block text-black mb-2"> Description </label>

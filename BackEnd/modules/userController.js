@@ -1,4 +1,5 @@
 const {OAuth2Client} = require('google-auth-library');
+const { DateTime } = require('luxon');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const Event = require('../models/event');
@@ -75,7 +76,7 @@ exports.myEvents = (req, res) => {
       message: 'User not logged in',
     });
   }
-  Promise.all([User.findById(userId), Event.find({hostName: userId})]).then(([user, events]) => {
+  Promise.all([User.findById(userId).lean(), Event.find({hostName: userId}).lean()]).then(([user, events]) => {
     if (!user) {
       return res.status(404).json({
         status: 'fail',
@@ -83,6 +84,10 @@ exports.myEvents = (req, res) => {
       });
     }
     events.map(event => {
+      const start = new Date(event.startDate);
+      const end = new Date(event.endDate);
+      event.startDateFormatted = DateTime.fromJSDate(start).toFormat('MM-dd-yyyy hh:mm a');
+      event.endDateFormatted = DateTime.fromJSDate(end).toFormat('MM-dd-yyyy hh:mm a');
       event.image = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${event.image}`;
     });
     console.log("Events:", events);

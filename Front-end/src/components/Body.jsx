@@ -1,6 +1,3 @@
-import atlanticCity  from "../assets/atlantic-city.jpg";
-import { Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 import { allEventsApi } from "./api/eventApi"; 
 

@@ -37,10 +37,10 @@ export default function ShowEventDetails() {
     };
     
   return (
-    <div className="font-sans flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <div className="bg-white shadow-md rounded-lg p-4 h-full max-w-3xl">
+        <div className="flex-grow flex items-center justify-center bg-[#dcdcdc]">
+          <div className='bg-white p-8 rounded shadow'>
             <h2 className="text-xl font-bold mb-3 hover:underline"> {event.event} </h2>
             {registeredEvents.includes(event._id) ? (
               <Stack direction="row" marginBottom={1} spacing={1}>
@@ -56,10 +56,8 @@ export default function ShowEventDetails() {
                 <p><strong>Organizer:</strong> {event.organizer}</p>
                 <p><strong>No. Of Users Registered:</strong> {event.registeredUsers.length}</p>
                 <p><strong>Place:</strong> {event.place}</p>
-                <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString("en-US", {
-                  year: "numeric", month: "long", day: "numeric", })}</p>
-                <p><strong>Start Time:</strong> {event.startTime}</p>
-                <p><strong>End Time:</strong> {event.endTime}</p>
+                <p><strong>Start Date:</strong> {event.startDateFormatted}</p>
+                <p><strong>End Date:</strong> {event.endDateFormatted}</p>
                 <p><strong>Description:</strong> {event.description}</p>
                 <p><strong>No. of Rsvp's:</strong> {rsvpCount}</p>
               </div>

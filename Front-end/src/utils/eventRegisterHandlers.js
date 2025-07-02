@@ -1,5 +1,3 @@
-import { useNavigate } from "react-router-dom";
-import { allEventsApi } from "../components/api/eventApi.js";
 export const RegisterEvent = async (event, setRegisteredEvents, registerEventApi, isAuthenticated, e) => {
     e.preventDefault();
     if(!isAuthenticated) {
