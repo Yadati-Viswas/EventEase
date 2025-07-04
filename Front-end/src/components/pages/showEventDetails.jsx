@@ -24,7 +24,6 @@ export default function ShowEventDetails() {
             const response1 = await getRsvpCountApi(eventId);
             if (response1.status === 200 || response1.status === 304) {
                 setRsvpCount(response1.data.data.countRsvp);
-                console.log("RSVP Count Updated:", rsvpCount);
             }
             alert("RSVP Updated!");
           } else {
@@ -42,7 +41,7 @@ export default function ShowEventDetails() {
         <div className="flex-grow flex items-center justify-center bg-[#dcdcdc]">
           <div className='bg-white p-8 rounded shadow'>
             <h2 className="text-xl font-bold mb-3 hover:underline"> {event.event} </h2>
-            {registeredEvents.includes(event._id) ? (
+            {registeredEvents.some(e => e._id === event._id) ? (
               <Stack direction="row" marginBottom={1} spacing={1}>
                  <h2 className="mb-2"><strong>RSVP Event:</strong></h2>
                  <Button variant="contained" color="primary" size="small" onClick={(e) => sendRsvp(event._id,{rsvp:"Yes"}, e)}>Yes</Button>
@@ -64,7 +63,7 @@ export default function ShowEventDetails() {
               <div className="flex items-center ml-4">
                 { isAuthenticated ? (
                 <div className="ml-4 flex mt-4">
-                    {registeredEvents.includes(event._id) ? (
+                    {registeredEvents.some(e => e._id === event._id) ? (
                     <div>
                         <Stack direction="column" marginBottom={1} spacing={1}>
                         <span className="text-green-500 mr-2">Registered ✔</span>

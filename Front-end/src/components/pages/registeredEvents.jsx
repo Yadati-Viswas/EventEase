@@ -1,30 +1,23 @@
 import Footer from "../Footer";
 import Navbar from "../Navbar";
 import { useEffect,useState } from "react";
-import { getRegisteredEventsApi } from "../api/eventApi";
+import { useEvents } from "../../contexts/EventsContext";
 
 export default function RegisteredEvents() {
-    const [registeredEvents, setRegisteredEvents] = useState([]);
+    const { registeredEvents, getRegisteredEvents } = useEvents();
     useEffect(() => {
-        const getRegisteredEvents = async () => {
-            const response = await getRegisteredEventsApi();
-            console.log("Registered Events Response:", response.data.data);
-            if (response.status === 200 || response.status === 304) {
-              setRegisteredEvents(response.data.data);
-            } else {
-              alert(response.message);
-            }
-        };
-        getRegisteredEvents();
-    }, []);
+        if (registeredEvents.length === 0) {
+          getRegisteredEvents();
+        }
+      }, [getRegisteredEvents]);
     return (
-        <div className="min-h-screen flex flex-col font-sans absolute inset-0 z-0">
+        <div className="min-h-screen flex flex-col font-sans">
             <Navbar />
-            <div className="flex-grow flex items-center justify-center bg-[#dcdcdc]" style={{backgroundImage: `radial-gradient(ellipse 80% 60% at 50% 0%, rgba(251, 191, 36, 0.25), transparent 100%)`, backgroundColor: "#dcdcdc"}}>
-                <div className='bg-white p-8 rounded shadow' style={{background: "radial-gradient(125% 125% at 50% 90%, #fff 40%, #475569 100%)"}}>
+            <div className="flex-grow flex items-center justify-center bg-[#dcdcdc]">
+                <div className='bg-white p-8 rounded shadow'>
                     <h2 className="text-2xl font-bold mb-6 text-black text-center">Registered Events</h2>
                     {registeredEvents.map((event) => (
-                    <div key={event._id} className="p-4 mb-4 rounded shadow" >
+                    <div key={event._id} className="p-4 mb-4 rounded shadow" style={{ border: "2px solid rgb(30, 31, 32)" }}>
                         <h2 className="text-xl font-bold">{event.event}</h2>
                         <div className="flex text-black">
                         <div>

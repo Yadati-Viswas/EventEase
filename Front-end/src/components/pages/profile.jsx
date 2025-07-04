@@ -5,7 +5,6 @@ import {useAuth} from "../../contexts/AuthContext";
 
 export default function Profile() {
   const { user } = useAuth();
-  console.log("User Profile:", user);
   if (!user) {
     return (
       <div className="font-sans">

@@ -5,7 +5,6 @@ export const RegisterEvent = async (event, setRegisteredEvents, registerEventApi
       return;
     }
     const eventId = event._id;
-    console.log("Event ID:",eventId);
     const response = await registerEventApi(event, eventId);
     if (response.status === 200) {
       alert("Registered successfully!");
@@ -21,7 +20,6 @@ export const UnregisterEvent = async (event, setRegisteredEvents, UnregisterEven
       return;
     }
     const eventId = event._id;
-    console.log("Event ID:", eventId);
     const response = await UnregisterEventApi(eventId);
     if (response.status === 200) {
       alert("Unregistered successfully!");

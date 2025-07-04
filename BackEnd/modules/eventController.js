@@ -54,7 +54,6 @@ exports.getAllEvents = (req, res) => {
             event.endDateFormatted = DateTime.fromJSDate(end).toFormat('MM-dd-yyyy hh:mm a');
             event.image = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${event.image}`;
         });
-        console.log("Updated Events:", updatedEvents);
         res.status(200).json({
             status: 'success',
             message: 'Events retrieved successfully',

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
@@ -14,10 +14,19 @@ export default function AllEvents() {
   const location = useLocation();
   const navigate = useNavigate();
   const { allEvents } = location.state || {};
-  const {registeredEvents, setRegisteredEvents} = useEvents();
+  const { registeredEvents, setRegisteredEvents, getRegisteredEvents } = useEvents();
   const { isAuthenticated } = useAuth();
+  useEffect(() => {
+    if (registeredEvents.length === 0) {
+      getRegisteredEvents();
+    }
+  }, [getRegisteredEvents]);
   const handleClick = async (event, e) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      alert("Please login to view event details.");
+      return;
+    }
     try {
       const response = await getRsvpCountApi(event._id);
       if (response.status === 200 || response.status === 304) {
@@ -53,7 +62,7 @@ export default function AllEvents() {
               <div className="flex items-center">
                 { isAuthenticated ? (
               <div className="ml-4 flex mt-4">
-                {registeredEvents.includes(event._id) ? (
+                {registeredEvents.some(e => e._id === event._id) ? (
                   <div>
                     <span className="text-green-500 mr-2">Registered ✔</span>
                     <button onClick={(e) => UnregisterEvent(event, setRegisteredEvents, UnregisterEventApi, isAuthenticated, e)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">

@@ -6,18 +6,18 @@ const EventsContext = createContext();
 export const EventsProvider = ({ children }) => {
   const [registeredEvents, setRegisteredEvents] = useState([]);
   useEffect(() => {
-    const getRegisteredEvents = async () => {
+    getRegisteredEvents();
+  }, []);
+  const getRegisteredEvents = async () => {
       const response = await getRegisteredEventsApi();
       if (response.status === 200 || response.status === 304) {
-        setRegisteredEvents(response.data.data.map(event => event._id));
+        setRegisteredEvents(response.data.data);
       } else {
         alert(response.message);
       }
-    };
-    getRegisteredEvents();
-  }, []);
+  };
   return (
-    <EventsContext.Provider value={{ registeredEvents, setRegisteredEvents }}>
+    <EventsContext.Provider value={{ registeredEvents, setRegisteredEvents, getRegisteredEvents }}>
       {children}
     </EventsContext.Provider>
   );

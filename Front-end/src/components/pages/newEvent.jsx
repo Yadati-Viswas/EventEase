@@ -26,9 +26,6 @@ export default function NewEvent() {
       if (response.status === 200) {
         const allEventResponse = await allEventsApi();
         const allEvents = allEventResponse.data.data;
-        allEvents.forEach((event) => {
-          console.log(event);
-        });
         navigate("/events/allEvents", { state: { allEvents } });
       } else {
         alert(response.message);
@@ -70,7 +67,7 @@ export default function NewEvent() {
               <label htmlFor="image" className="block text-black mb-2"> Upload Image </label>
               <input id="image" type="file" className="w-full p-2 border border-gray-300 rounded cursor-pointer" required
               accept="image/*" name="image" placeholder="Upload Image" onChange={(e) => setImage(e.target.files[0])} />
-              <span class="text-sm text-gray-500">Max file size is 2MB</span>
+              <span className="text-sm text-gray-500">Max file size is 2MB</span>
             </div>
             <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 cursor-pointer"> Submit </button>
           </form>

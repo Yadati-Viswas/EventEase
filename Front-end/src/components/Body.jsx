@@ -6,8 +6,6 @@ export default function Body() {
   const getAllEvents = async () => { 
     const allEventResponse = await allEventsApi();
     const allEvents = allEventResponse.data.data;
-    console.log("All Events:", allEvents);
-    console.log(allEvents);
     Navigate("/events/allEvents", { state: { allEvents} });
   };
     return (
