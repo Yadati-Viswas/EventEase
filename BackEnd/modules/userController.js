@@ -114,6 +114,7 @@ exports.logout = (req, res) => {
 
 exports.googleLogin = (req, res) => {
   const token = req.body.token;
+  console.log("Google Token:", token);
   const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   client.verifyIdToken({idToken: token, audience: process.env.GOOGLE_CLIENT_ID}).then((ticket) => {
     const payload = ticket.getPayload();
@@ -127,11 +128,12 @@ exports.googleLogin = (req, res) => {
           password: 'google',
         });
         user.save().then(() => {
-          req.user.userId = user._id;
+          const userToken = jwt.sign({userId: user._id, email: user.email}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRY});
           res.status(200).json({
             status: 'success',
             message: 'Google login successful',
             data: user,
+            token: userToken,
           });
         }).catch(err => {
           res.status(400).json({
@@ -140,11 +142,12 @@ exports.googleLogin = (req, res) => {
           });
         });
       } else {
-        req.user.userId = user._id;
+        const userToken = jwt.sign({userId: user._id, email: user.email}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRY});
         res.status(200).json({
           status: 'success',
           message: 'Google login successful',
           data: user,
+          token: userToken,
         });
       }
     }).catch(err => {

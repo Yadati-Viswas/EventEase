@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography'; 
 import Box from '@mui/material/Box';
 
-function OtpVerificationDialog({ open, onClose, email, otpSent, otpLoading, otp, setOtp, handleSendOtp, handleVerifyOtp,}) {
+function OtpVerificationDialog({ open, onClose, email, otpSent, otpLoading, otp, setOtp, handleSendOtp, handleVerifyOtp, otpError, setOtpError}) {
   return (
     <Dialog open={open}  onClose={onClose} aria-labelledby="otp-dialog-title" maxWidth="xs" fullWidth >
       <DialogTitle id="otp-dialog-title">Verify your email</DialogTitle>
@@ -16,19 +16,29 @@ function OtpVerificationDialog({ open, onClose, email, otpSent, otpLoading, otp,
         {!otpSent ? (
           <Box>
             <Typography variant="body2" sx={{ mb: 2 }}>
-              Click the button below to send an OTP to <b>{email}</b>.
+              {email ? (
+                <>Click the button below to send an OTP to <b>{email}</b>.</>
+              ) : (
+                <span style={{ color: 'red' }}>Email must be entered to send OTP.</span>
+              )}
             </Typography>
-            <Button variant="contained" color="primary" onClick={handleSendOtp} disabled={otpLoading}  fullWidth >
+            {email ? (
+              <Button variant="contained" color="primary" onClick={handleSendOtp} disabled={otpLoading}  fullWidth >
               {otpLoading ? 'Sending...' : 'Send OTP'}
-            </Button>
+              </Button>
+            ) : (
+              <Typography variant="body2" sx={{ color: 'red' }}>
+                Please Enter Email
+              </Typography>
+            )}
           </Box>
         ) : (
           <Box>
             <Typography variant="h6" component="h3" sx={{ mb: 2 }}>
               Enter OTP
             </Typography>
-            <TextField fullWidth label="Enter OTP" variant="outlined" value={otp} onChange={(e) => setOtp(e.target.value)}
-              sx={{ mb: 2 }} type="text" inputProps={{ maxLength: 6 }} />
+            <TextField fullWidth label="Enter OTP" variant="outlined" value={otp} onChange={(e) => {setOtp(e.target.value); setOtpError('');}}
+              sx={{ mb: 2 }} type="text" inputProps={{ maxLength: 6 }} error={!!otpError} helperText={otpError} />
             <Button variant="contained" color="primary" onClick={handleVerifyOtp} disabled={otpLoading} fullWidth>
               {otpLoading ? 'Verifying...' : 'Verify OTP'}
             </Button>

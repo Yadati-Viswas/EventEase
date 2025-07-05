@@ -16,15 +16,21 @@ export default function PasswordReset() {
     const [otpSent, setOtpSent] = useState(false);
     const [otp, setOtp] = useState('');
     const [otpLoading, setOtpLoading] = useState(false);
+    const [otpError, setOtpError] = useState('');
 
     const navigate = useNavigate();
 
     const handleSendOtp = async () => {
       setOtpLoading(true);
-      const response = await sendOtpApi(email);
+      const purpose = 'password-reset';
+      const response = await sendOtpApi(email, purpose);
       if(response.status === 200) {
         setOtpLoading(false);
         setOtpSent(true);
+      } else {
+        setOtpLoading(false);
+        setOtpError(response.message || 'OTP is not valid');
+        alert(response.message);
       }
     };
     const verifyEmail = async (email) => {
@@ -33,16 +39,23 @@ export default function PasswordReset() {
       setOtp('');
     };
     const handleVerifyOtp = async () => {
-      setOtpLoading(true);
-      const response = await verifyOtpApi(email, otp);
-      setOtpLoading(false);
-      if (response.status === 200) {
-        setEmailVerified(true);
-        setShowOtpModal(false);
-      } else {
-        alert(response.message);
-      }
-    }
+        setOtpLoading(true);
+        setOtpError('');
+        try {
+            const response = await verifyOtpApi(email, otp);
+            if (response.status === 200) {
+                setOtpLoading(false);
+                setEmailVerified(true);
+                setShowOtpModal(false);
+            } else {
+                setOtpLoading(false);
+                setOtpError(response.message || 'OTP is not valid');
+            }
+        } catch (error) {
+            setOtpLoading(false);
+            setOtpError('OTP is not valid');
+        }
+    };
     const handlePasswordReset = async (e) => {
         e.preventDefault();
         if(!emailVerified) {
@@ -90,7 +103,7 @@ export default function PasswordReset() {
                 </div>
             </div>
             <Footer />
-            {showOtpModal && (<OtpVerificationDialog open={showOtpModal} onClose={() => setShowOtpModal(false)} email={email}
+            {showOtpModal && (<OtpVerificationDialog open={showOtpModal} onClose={() => setShowOtpModal(false)} email={email} otpError={otpError} setOtpError={setOtpError}
             otpSent={otpSent} otpLoading={otpLoading} otp={otp}  setOtp={setOtp} handleSendOtp={handleSendOtp} handleVerifyOtp={handleVerifyOtp} />)}
         </div>
     )

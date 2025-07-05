@@ -29,6 +29,8 @@ function Login() {
     const handleGoogleSuccess = async (credentialResponse) => {
       const response = await postGoogleApi(credentialResponse.credential);
       if (response.status === 200) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.data));
         login(response.data.data);
         navigate('/');
       } else {

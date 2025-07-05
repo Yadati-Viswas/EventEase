@@ -23,8 +23,8 @@ async function callAPI(method, endpoint, data = null, isAuthRequired = false, ex
   }
 }
 
-async function sendOtpApi(email) {
-  return callAPI('POST', '/send-otp', { email });
+async function sendOtpApi(email, purpose) {
+  return callAPI('POST', '/send-otp', { email, purpose });
 }
 
 async function verifyOtpApi(email, otp) {

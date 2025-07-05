@@ -3,13 +3,19 @@ const OTP = require('../models/otp');
 const User = require('../models/user');
 
 exports.sendOTP = (req, res) => {
-  const { email } = req.body;
+  const { email, purpose } = req.body;
 
   User.findOne({ email }).then((checkUserPresent) => {
-      if (!checkUserPresent) {
+      if (purpose === 'password-reset' && !checkUserPresent) {
         return res.status(401).json({
           success: false,
           message: 'User is not registered',
+        });
+      }
+      if (purpose === 'signup' && checkUserPresent) {
+        return res.status(401).json({
+          success: false,
+          message: 'User is already registered',
         });
       }
       function generateUniqueOtp() {
@@ -53,36 +59,20 @@ exports.sendOTP = (req, res) => {
 exports.verifyOTP = (req, res) => {
   const { email, otp } = req.body;
 
-  User.findOne({ email })
-    .then((existingUser) => {
-      if (!existingUser) {
-        return res.status(400).json({
-          success: false,
-          message: 'User is not registered',
-        });
-      }
-      OTP.find({ email })
-        .sort({ createdAt: -1 })
-        .limit(1)
-        .then((response) => {
-          if (response.length === 0 || otp !== response[0].otp) {
-            return res.status(400).json({
-              success: false,
-              message: 'The OTP is not valid',
-            });
-          }
-          return res.status(200).json({
-            success: true,
-            message: 'OTP verified successfully',
-          });
-        })
-        .catch((error) => {
-          console.log(error.message);
-          return res.status(500).json({ success: false, error: error.message });
-        });
-    })
-    .catch((error) => {
-      console.log(error.message);
-      return res.status(500).json({ success: false, error: error.message });
+  OTP.find({ email }).sort({ createdAt: -1 }).limit(1).then((response) => {
+    if (response.length === 0 || otp !== response[0].otp) {
+      return res.status(400).json({
+      success: false,
+      message: 'The OTP is not valid',
     });
+    }
+    return res.status(200).json({
+        success: true,
+        message: 'OTP verified successfully',
+      });
+    })
+  .catch((error) => {
+    console.log(error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  });
 };
